@@ -63,77 +63,102 @@ end
 
 
 % Question 2 
-
-declare 
-fun {NewQueue}
-    q(nil nil)
-end
-fun {Check Q}
-    case Q of q(S nil) then q(nil {Reverse S})
-    [] _ then Q 
+declare
+fun {AmortizedQueue}
+    local
+        fun {NewQueue}
+            q(nil nil)
+        end
+        fun {Check Q}
+            case Q of q(S nil) then q(nil {Reverse S})
+            [] _ then Q 
+            end
+        end
+        fun {Push Q X}
+            case Q of q(S E) then {Check q(X|S E)} end
+        end
+        fun {Pop Q X}
+            case Q of q(S E) then 
+                X=E.1 {Check q(S E.2)}
+            end
+        end
+    in
+        m(new:NewQueue insert:Push delete:Pop)
     end
 end
-fun {Push Q X}
-    case Q of q(S E) then {Check q(X|S E)} end
-end
-fun {Pop Q X}
-    case Q of q(S E) then 
-        X=E.1 {Check q(S E.2)}
-    end
-end
 
-local Q1 Q2 Q3 Q4 X in
-    Q1 = {NewQueue}
-    Q2 = {Push Q1 5}
-    Q3 = {Push Q2 6}
-    {Browse Q3}
-    Q4 = {Pop Q3 X}
-    {Browse Q4}
+local Q X in
+    AQueue = {AmortizedQueue}
+    Q = queues(
+    1:_ 
+    2:_ 
+    3:_ 
+    4:_
+    0:_
+    )
+    Q.1 = {AQueue.new}
+    Q.2 = {AQueue.insert Q.1 5}
+    Q.3 = {AQueue.insert Q.2 6}
+    Q.4 = {AQueue.delete Q.3 X}
+    {Browse Q}
     {Browse X}
 end
 
 
 declare 
-fun {NewQueue}
-    X in
-    q(X X)
-end
-fun {Push Q X}
-    case Q of q(S E) then Y in E=X|Y q(S Y) end
-end
-fun {Pop Q X}
-    case Q of q(S E) then 
-        T in
-        S=X|T 
-        q(T E)
-    end
-end
-fun {PushList Q L}
-    case L of nil then Q 
-    [] H|T then {PushList {Push Q H} T}
-    end
-end
-fun {PopList Q N R}
-    if (N==0) then R=nil Q
-    else X Y in R=X|Y {PopList {Pop Q X} N-1 Y}
+fun {WorstQueue}
+    local
+        fun {NewQueue}
+            X in
+            q(X X)
+        end
+        fun {Push Q X}
+            case Q of q(S E) then Y in E=X|Y q(S Y) end
+        end
+        fun {Pop Q X}
+            case Q of q(S E) then 
+                T in
+                S=X|T 
+                q(T E)
+            end
+        end
+        fun {PushList Q L}
+            case L of nil then Q 
+            [] H|T then {PushList {Push Q H} T}
+            end
+        end
+        fun {PopList Q N R}
+            if (N==0) then R=nil Q
+            else X Y in R=X|Y {PopList {Pop Q X} N-1 Y}
+            end
+        end
+    in
+        m(new:NewQueue insert:Push delete:Pop pushList:PushList popList: PopList)
     end
 end
 
-local Q1 Q2 Q3 Q4 L in
-    Q1 = {NewQueue}
-    Q2 = {PushList Q1 [1 2 3]}
-    {Browse Q2}
-    Q3 = {PopList Q2 5 L}
-    {Browse Q3}
+local Q L in
+    Q = queues(1:_ 
+    2:_ 
+    3:_ 
+    4:_
+    0:_
+    )
+    WQueue = {WorstQueue}
+    Q.1 = {WQueue.new}
+    Q.2 = {WQueue.pushList Q.1 [1 2 3]}
+    Q.3 = {WQueue.popList Q.2 5 L}
+    Q.4 = {WQueue.pushList Q.2 [4 5 6 7]}  % these elements will be retrieved by the pop above => shouldn't be the case
+    {Browse Q}
     {Browse L}
-    Q4 = {PushList Q2 [4 5]}  % these elements will be retrieved by the pop above
-    {Browse Q4}
 end
 
 
 % Question 3
 
 declare
+AQueue={AmortizedQueue}
+WQueue={WorstQueue}
 fun {Test NewQueue Insert Delete}
     try
         Q0 Q1 Q2 Q4 Q5 in 
@@ -147,6 +172,9 @@ fun {Test NewQueue Insert Delete}
         ephemeral
     end
 end
+
 % Browse persistent for amortized constant time queue
+{Browse {Test AQueue.new AQueue.insert AQueue.delete}}
 % Browse ephemeral for worst case constant time queue
-{Browse {Test NewQueue Push Pop}}
+{Browse {Test WQueue.new WQueue.insert WQueue.delete}}
+
