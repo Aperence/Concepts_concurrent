@@ -174,7 +174,7 @@ fun {Test NewQueue Insert Delete}
 end
 
 % Browse persistent for amortized constant time queue
-{Browse {Test AQueue.new AQueue.insert AQueue.delete}}
+{Browse persistent({Test AQueue.new AQueue.insert AQueue.delete})}
 % Browse ephemeral for worst case constant time queue
-{Browse {Test WQueue.new WQueue.insert WQueue.delete}}
+{Browse worst({Test WQueue.new WQueue.insert WQueue.delete})}
 
