@@ -124,11 +124,11 @@ declare
             end
         end
     end
-    fun lazy {Insert X Ts} % Insert one element in the Heap
+    fun {Insert X Ts} % Insert one element in the Heap
         {Browse insert(X Ts)}
         {InsTree node(0 X nil) Ts}
     end
-    fun lazy {Merge Ts Us} % Merge two heaps
+    fun {Merge Ts Us} % Merge two heaps
         case Ts#Us
         of nil#_ then Us
         [] _#nil then Ts
@@ -153,7 +153,7 @@ declare
     fun {FindMin Ts} % Get the minimal value in the heap
         {RemoveMinTree Ts}.1.2
     end
-    fun lazy {DeleteMin Ts} % Get the heap minus the minimum element.
+    fun {DeleteMin Ts} % Get the heap minus the minimum element.
         pair(T Tr) = {RemoveMinTree Ts}
     in
         {Merge {Reverse T.3} Tr}
@@ -187,8 +187,6 @@ end
 %      n = #nodes
 %      d = depth = log n
 %
-%  Worst Case
-%
 %    Insert:
 % 
 %      O(log n) => if we have n nodes, we have log n depth levels
@@ -206,9 +204,6 @@ end
 %    Merge:
 %       O(log n) => we have to go up to a leaf in the worst case
 %
-%
-%
-%  Average
 %    Insert:
 % 
 %      O(1) 
@@ -226,4 +221,12 @@ end
 %
 %
 %
-% 4) We make merge, insert and delete lazy as the copies of trees are costly
+%
+%
+%
+%
+%
+%
+%
+%
+%
