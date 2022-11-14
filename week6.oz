@@ -13,6 +13,7 @@ T2=@B
 
 {Show T1=T2} % c: What will be printed here
 % 0
+% can also be used to raise exceptions when patterns doesn't match => exemple H|T = 1
 
 A:=@B
 {Show A==B} % d: What will be printed here
@@ -30,7 +31,8 @@ fun {NewPortObject F Init}
 end
 fun {NewCell I}
     fun {Handle State Msg}
-        case Msg of get(R) then R=State State
+        case Msg 
+        of get(R) then R=State State
         [] set(X) then X
         end
     end
@@ -62,7 +64,7 @@ fun {NewPort S}
 end
 proc {Send P X}
     Y in 
-        @P = X|Y
+        @P = X|!!Y   % make a future => end is read-only => can only be bound by this function
         P := Y
 end
 
@@ -72,6 +74,8 @@ local P S in
     {Send P 2}
     {Send P 3}
     {Send P null}
+    {Send P 4}
+    S.2.2.2.2 = nil % try to bind the future
 end
 
 
@@ -83,7 +87,7 @@ fun {NewPortClose S}
 end
 proc {Send P X}
     Y in 
-        @P = X|Y
+        @P = X|!!Y
         P := Y
 end
 proc {Close P}
@@ -154,7 +158,7 @@ class Port
     end
     meth send(X)
         Y in
-            @stream = X|Y
+            @stream = X|!!Y
             stream := Y
     end
 end
