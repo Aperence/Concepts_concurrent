@@ -10,7 +10,10 @@ handle()->
     receive
         {play, Pid, Move} -> 
             receive 
-                {play, Pid2, Move2} when Pid /= Pid2 -> Pid ! {you, play(Move, Move2)}, Pid2 ! {you, play(Move2, Move)}, handle()
+                {play, Pid2, Move2} when Pid /= Pid2 -> 
+                    Pid ! {you, play(Move, Move2)}, 
+                    Pid2 ! {you, play(Move2, Move)}, 
+                    handle()
             end
     end.
 
