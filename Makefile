@@ -1,2 +1,2 @@
 clean:
-	rm -f "*.beam"
+	rm -f *.beam

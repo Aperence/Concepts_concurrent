@@ -1,9 +1,9 @@
 -module(ppc).
--export([start/0, handle/0, game/3, random/1, random_loop/1, printer/0]).
+-export([start_game/0, handle/0, game/3, random/1, random_loop/1, player/1]).
 -import(lists, [nth/2]).
 -define(MOVES, [pierre, papier, ciseaux]).
 
-start()->
+start_game()->
     spawn_link(?MODULE, handle, []).
 
 handle()->
@@ -27,8 +27,8 @@ random_loop(Pid)->
     end.
 
 
-printer()->
-    spawn_link(fun Y() -> receive X -> io:format("~p~n", [X]), Y() end end).
+player(Name)->
+    spawn_link(fun Y() -> receive X -> io:format("~p received ~p~n", [Name, X]), Y() end end).
 
 
 random_move() ->
