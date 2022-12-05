@@ -2,7 +2,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0]).
+-export([start_link/0, get_child/1]).
 -export([init/1]).
 
 start_link() ->
@@ -26,4 +26,7 @@ init(_Args) ->
     ],
 
     {ok, {SupervisorSpecification, ChildSpecifications}}.
+
+get_child(Sup) ->
+    element(2, hd(supervisor:which_children(Sup))).
 

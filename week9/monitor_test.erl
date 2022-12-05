@@ -1,9 +1,11 @@
--module(gen_test).
+-module(monitor_test).
 -export([main/0]).
--import(monitor, [start/0, inc/1, get_value/1, watch/1]).
+-import(gen_counter, [inc/1, watch/1, get_value/1]).
+-import(monitor, [start_link/0, get_child/1]).
 
 main()->
-    {ok, Pid} = start(), 
+    {ok, Sup} = start_link(),
+    Pid = get_child(Sup), 
     inc(Pid),
     watch(Pid),
     inc(Pid),
