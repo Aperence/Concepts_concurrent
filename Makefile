@@ -1,2 +1,2 @@
 clean:
-	rm -f *.beam
+	find . -name "*.beam" -type f -delete
