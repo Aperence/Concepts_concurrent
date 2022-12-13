@@ -150,20 +150,53 @@ in
 end
 
 % Question 6
-
+declare
 proc {MakeMvar Put Get}
     Mvar = {NewCell _}
-    L = {NewLock}
+    LRead = {NewLock}
+    LWrite = {NewLock}
+    Empty = {NewCell unit}
+    Full = {NewCell _}
 in
     proc {Put X}
+        lock LWrite then
+            {Wait @Empty}
+            Mvar := X
+            Empty := _
+            @Full = unit
+        end
         
     end
 
     proc {Get X}
-        Old in
-        lock L in
-            Old = @Mvar
+        lock LRead then
+            {Wait @Full}
+            X = @Mvar
+            Full := _
+            @Empty = unit
         end
-        {Wait Old}
     end
+end
+
+local Put Get Go in
+    {MakeMvar Put Get}
+
+    for X in 1..10 do
+        thread
+            {Wait Go}
+            {Put X}
+        end
+    end
+    for X in 11..20 do
+        thread
+            {Wait Go}
+            {Put X}
+        end
+    end
+
+    for X in 1..20 do
+        thread {Browse {Get $}} end
+    end
+
+    Go = unit
 end
